@@ -1,16 +1,14 @@
 # 3 Tips For Connecting To Your First API
 ## Seattle Open City Data
 
-<img src="images/seattle_open_data_header.png" alt="Seattle Open Data Header" width="500" align="left"/>
-<br>
+![Seattle Open Data](images/seattle_open_data_header.png "Seattle Open Data")
 
 In the Plotly_Open_City_Data_API notebook, we'll connect to a few open datasets for Seattle (https://data.seattle.gov) using the Socrata Open Data (SODA) API. We'll cover filtering and querying with the SODA API, and then visualize the results. In the web_app_plotly folder, you'll
 see the code needed to deploy these visualizations to a Heroku web app, which you can check out at https://pmaag-webapp.herokuapp.com/.
 
 ## 1. How To Find The API Endpoint
 
-<img src="images/find_api_endpoint.png" alt="Seattle Budget API Endpoint" width="700" align="left"/>
-<br>
+![Find API Endpoint](images/find_api_endpoint.png "Find API Endpoint")
 
 To grab the API endpoint, first navigate to a sample dataset that you're interesting in exploring. We'll use https://data.seattle.gov/dataset/City-of-Seattle-Operating-Budget/8u2j-imqx as an example. Then, in the upper right corner, click on the API button and copy the text in the API Endpoint box: https://data.seattle.gov/resource/8u2j-imqx.json. Several cities use Socrata, but if you're using a different API, your best best is to skim through the documentation for details.
 
