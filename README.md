@@ -3,94 +3,40 @@
 
 ![Seattle Open Data](images/seattle_open_data_header.png "Seattle Open Data")
 
+## Packages
+
+The Jupyter notebook for this project utilizes requests, pandas, and matplotlib from Python. The web app has a requirements.txt file listing the full set of libraries, with Flask and plotly as some of the key additional ones.
+
+## Motivation
+
 Have you ever wanted to connect to data using an API, but you weren't quite sure where to begin? The Plotly_Open_City_Data_API notebook will walk through the basics of the Socrata Open Data (SODA) API, which many cities use as a way to access their data. After reading through the tips and examples, you should be able to confidently query data using your first API!
 
 Briefly, we'll connect to a few open datasets for Seattle (https://data.seattle.gov), cover filtering and querying with the SODA API, and then visualize the results. In the web_app_plotly folder, you'll see the code needed to deploy these visualizations to a Heroku web app, which you can check out at https://pmaag-webapp.herokuapp.com/.
 
-## 1. How To Find The API Endpoint
+## Files
 
-![Find API Endpoint](images/find_api_endpoint.png "Find API Endpoint")
+There are three main files:
 
-To grab the API endpoint, first navigate to a sample dataset that you're interested in exploring. We'll use https://data.seattle.gov/dataset/City-of-Seattle-Operating-Budget/8u2j-imqx as an example. Then, in the upper right corner, click on the API button and copy the text in the API Endpoint box: https://data.seattle.gov/resource/8u2j-imqx.json. Several cities use Socrata, but if you're using a different API, your best bet is to skim through the documentation for details.
+**Plotly_Open_City_Data_API.ipynb**
 
-## Imports
+Jupyter notebook containing the analysis of Seattle wage, budget, and crime data.
 
-```python
-import pandas as pd
-import requests
-import matplotlib.pyplot as plt
+**web_app_plotly/wrangling_scripts/wrangle_data.py**
 
-%matplotlib inline
-```
+Python script that connects to Seattle open data using SODA API, prepares data using pandas, and then creates Plotly figures.
 
-## 2. Create A Function To Simplify Bringing In The Data
+**web_app_plotly/myapp/templates/index.html**
 
-For ease of use, we will create a function utilizing the requests library where we can pass a url and an optional set of query parameters and then convert the result into a pandas dataframe.
+HTML file that utilizes Bootstrap and Jinja2 to create a dynamic HTML page that plugs in the Plotly figures.
 
-```python
-def open_data_to_df(url, params=None):
-    """ Input url and convert to pandas dataframe"""
-    request_object = requests.get(url, params)
-    request_object_json = request_object.json()
-    return pd.DataFrame([entry for entry in request_object_json])
-```
+## Results
 
-## 3. Multiple Ways To Filter SODA API Results
-- **Simple Filters**: https://dev.socrata.com/docs/filtering.html
-- **Payload**: Variation on simple filters that separates filters into an easily readable dictionary http://docs.python-requests.org/en/master/user/quickstart/
-- **Socrata Query Language (SoQL)**: https://dev.socrata.com/docs/queries/
-
-Honestly, the documentation linked above could use more code examples, but with a little trial and error and reading the rest of this post, you should be able to quickly understand how to filter the results. Keep in mind that the default limit for queries is set to 1000, but we can adjust this up to 50,000 before we need to worry about paging ( https://dev.socrata.com/consumers/getting-started.html ).
-
-### Simple Filters Example
-
-One way to filter the results is by adding `?<column_name>=<value>` to the end of the URL. If you would like to filter on more than one column, separate each column with an ampersand like this: `?<col1>=<val1>&<col2>=<val2>`.
-
-```python
-simple_budget_url = 'https://data.seattle.gov/resource/4fzy-5niz.json?fiscal_year=2018&department=Transportation'
-simple_budget = open_data_to_df(simple_budget_url)
-```
-
-### Payload Example
-
-If you have several values you would like to filter on, passing these values in a separate dictionary can improve readability. The function `open_data_to_df` takes a params parameter where we can pass the dictionary.
-
-```python
-# Enter column name followed by value into payload dictionary for filtering
-payload = {'fiscal_year': '2018', 'department': 'City Light'}
-budget_url = 'https://data.seattle.gov/resource/4fzy-5niz.json'
-
-# Pass the payload as the second argument to the function
-budget_using_payload = open_data_to_df(budget_url, params=payload)
-```
-
-### Socrata Query Language (SoQL) Example
-
-If you're familiar with SQL, you can use most of its functionality to quickly shape the data. Below we will walk through an example of the syntax. To use SoQL with the SODA API, we just need to append `?$<sql_query>` to the URL.
-
-Example Query: <br>
-**select** fiscal_year, sum(approved_amount) as approved_amount <br>
-**where** fiscal_year between 2010 and 2018 <br>
-**group by** fiscal_year <br>
-**order by** fiscal_year
-
-```python
-# Note the '=' directly after the SELECT. Without that, the API returns an error
-yearly_budget_url = 'https://data.seattle.gov/resource/4fzy-5niz.json?$select=fiscal_year, \
-                     sum(approved_amount) as approved_amount \
-                     where fiscal_year between 2010 and 2018  \
-                     group by fiscal_year \
-                     order by fiscal_year'
-yearly_budget = open_data_to_df(yearly_budget_url)
-
-# Convert approved_amount from string to numeric
-yearly_budget['approved_amount'] = pd.to_numeric(yearly_budget['approved_amount'])
-```
-
-# Dive Into The Data
-
-For more data examples, please see the notebook referenced earlier.
-
-## How Has Seattle's Overall Budget Grown Over The Last Several Years?
+### How Has Seattle's Overall Budget Grown Over The Last Several Years?
 
 ![Seattle Budget Growth](images/seattle_budget_growth.png "Seattle Budget Growth")
+
+### What Are The Most Common Types Of Crime In 2018 And How Often Do They Occur?
+
+![Most Common Crimes](images/most_common_crimes.png "Most Common Crimes")
+
+While we did analyze some open data from Seattle, the primary purpose of this project was to connect to open data using the SODA API and then create a dynamic web app that displayed Plotly figures. The tips from the notebook are also summarized in a blog post [here](https://medium.com/@chrispmaag/3-tips-for-connecting-to-your-first-api-d8346fe06aee).
